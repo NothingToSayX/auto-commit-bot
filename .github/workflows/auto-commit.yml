@@ -1,0 +1,33 @@
+name: Auto GitHub Commit  
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Allows manual execution
+
+permissions:
+  contents: write
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest  
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create or update a file
+        run: |
+          echo "Last commit: $(date)" > last_commit.txt
+          git add last_commit.txt
+          git commit -m "Automated commit - $(date)" || echo "No changes to commit"
+
+      - name: Push changes
+        run: git push
+
+
